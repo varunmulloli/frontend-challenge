@@ -7,7 +7,7 @@ let fetchSeasonDetailsAndOpenPage = (year: string) : unit => {
   ignore(pageToRender |> Routes.pageURL |> ReasonReactRouter.push);
 };
 
-let renderSeasonsList = (index: int, seasonInfo: StandingsLists.standingsLists) : React.element => {
+let renderSeason = (index: int, seasonInfo: StandingsLists.standingsLists) : React.element => {
   let season: string = seasonInfo.season -> Belt.Option.getWithDefault("????");
 
   let driverStandingsInfo: option(DriverStandings.driverStandings) = seasonInfo.driverStandings 
@@ -23,10 +23,6 @@ let renderSeasonsList = (index: int, seasonInfo: StandingsLists.standingsLists) 
     
   let familyName: string = driverInfo 
     -> Belt.Option.flatMap(driver => driver.familyName) 
-    -> Belt.Option.getWithDefault("");
-  
-  let nationality: string = driverInfo 
-    -> Belt.Option.flatMap(driver => driver.nationality) 
     -> Belt.Option.getWithDefault("");
 
   let constructorsInfo: list(Constructor.constructor) = driverStandingsInfo 
@@ -59,6 +55,13 @@ let renderSeasonsList = (index: int, seasonInfo: StandingsLists.standingsLists) 
   </div>
 };
 
+let renderSeasonsList = (seasonsList: list(StandingsLists.standingsLists)) : React.element => {
+  <>
+    <div className=SeasonsListCSS.title>{React.string("World Championship Winners")}</div>
+    { ComponentHelper.renderList(seasonsList, renderSeason) }
+  </>
+}; 
+
 [@react.component]
 let make = (~dispatch: Reducer.action => unit, ~seasonsListData: option(StandingsTableResponse.response)) : React.element => {
   let url: ReasonReactRouter.url = ReasonReactRouter.useUrl();
@@ -82,7 +85,11 @@ let make = (~dispatch: Reducer.action => unit, ~seasonsListData: option(Standing
   }, [|url|]);
 
   <div className=SeasonsListCSS.contents>
-    <div className=SeasonsListCSS.title>{React.string("World Championship Winners")}</div>
-    { ComponentHelper.renderList(seasonsList, renderSeasonsList) }
+    {
+      switch (dataState) {
+      | Loading => <Spinner />
+      | Loaded => renderSeasonsList(seasonsList)
+      };
+    }
   </div>
 };

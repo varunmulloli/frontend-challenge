@@ -11,5 +11,6 @@ let headerContainer = style([
 let logo = style([
   marginLeft(Theme.marginWidth),
   cursor(`pointer),
+  height(px(32)),
 ]);
 

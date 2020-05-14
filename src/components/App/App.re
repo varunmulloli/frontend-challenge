@@ -6,8 +6,9 @@ let make = (~initialResponses: Responses.responses, ~initialErrors: Types.errors
   let page: Types.page = Routes.getPageForUrl(url);
   let component: (Reducer.state, Reducer.action => unit) => React.element = RouteComponent.componentToRender(page);
  
-  <div className=AppCss.contents>
+  <div className=AppCSS.contents>
     <Header />
     { component(state, dispatch) }
+    <Errors errors=state.errors />
   </div>
 };

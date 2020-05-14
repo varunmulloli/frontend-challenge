@@ -5,7 +5,6 @@ let contents = style([
   marginRight(px(32)),
   marginLeft(px(32)),
   padding(px(32)),
-  fontFamily(`custom(Theme.titilliumWeb)),
   background(Theme.foregroundColor),
   color(Theme.textColor),
 ]);

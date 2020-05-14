@@ -20,7 +20,7 @@ let renderRacesList = (index: int, races: Races.races) : React.element => {
     -> Belt.Option.flatMap(result => result.constructor)
     -> Belt.Option.flatMap(constructor => constructor.name)
     -> Belt.Option.getWithDefault("????")
-    -> String.uppercase;
+    -> String.uppercase_ascii;
   
   let laps: string = resultDetails
     -> Belt.Option.flatMap(result => result.laps)
@@ -39,6 +39,29 @@ let renderRacesList = (index: int, races: Races.races) : React.element => {
     <td>{React.string(laps)}</td>
     <td>{React.string(time)}</td>
   </tr>
+};
+
+let renderSeasonDetails = (season: string, racesList: list(Races.races)) : React.element => {
+  <>
+    <div className=SeasonDetailsCSS.title>{React.string(season ++ " Race Results")}</div>
+
+    <table className=SeasonDetailsCSS.detailsTable>
+      <thead>
+        <tr className=SeasonDetailsCSS.headerRow>
+          <th>{React.string("GRAND PRIX")}</th>
+          <th>{React.string("DATE")}</th>
+          <th>{React.string("WINNER")}</th>
+          <th>{React.string("CAR")}</th>
+          <th>{React.string("LAPS")}</th>
+          <th>{React.string("TIME")}</th>
+        </tr>
+      </thead>
+
+      <tbody className=SeasonDetailsCSS.tableBody>
+        { ComponentHelper.renderList(racesList, renderRacesList) }
+      </tbody>
+    </table>
+  </>
 };
 
 [@react.component]
@@ -71,23 +94,11 @@ let make = (~dispatch: Reducer.action => unit, ~seasonDetailsData: option(Respon
   }, [|url|]);
     
   <div className=SeasonDetailsCSS.contents>
-    <div className=SeasonDetailsCSS.title>{React.string(season ++ " Race Results")}</div>
-
-    <table className=SeasonDetailsCSS.detailsTable>
-      <thead>
-        <tr className=SeasonDetailsCSS.headerRow>
-          <th>{React.string("GRAND PRIX")}</th>
-          <th>{React.string("DATE")}</th>
-          <th>{React.string("WINNER")}</th>
-          <th>{React.string("CAR")}</th>
-          <th>{React.string("LAPS")}</th>
-          <th>{React.string("TIME")}</th>
-        </tr>
-      </thead>
-
-      <tbody className=SeasonDetailsCSS.tableBody>
-        { ComponentHelper.renderList(racesList, renderRacesList) }
-      </tbody>
-    </table>
+    {
+      switch (dataState) {
+      | Types.Loading => <Spinner />
+      | Types.Loaded => renderSeasonDetails(season, racesList)
+      };
+    }
   </div>
 };
