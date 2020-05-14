@@ -1,3 +1,12 @@
+let fetchSeasonDetailsAndOpenPage = (year: string) : unit => {
+  let maybeSeason: option(Types.season) = GeneralHelper.parseInt(year);
+  let pageToRender: Types.page = switch maybeSeason {
+  | Some(season) => Types.SeasonDetails(season)
+  | None => Types.NotFound
+  };
+  pageToRender |> Routes.pageURL |> ReasonReactRouter.push;
+};
+
 let renderSeasonsList = (index: int, seasonInfo: StandingsLists.standingsLists) : React.element => {
   let season = seasonInfo.season -> Belt.Option.getWithDefault("????");
   let driverStandingsInfo = seasonInfo.driverStandings 
@@ -34,7 +43,7 @@ let renderSeasonsList = (index: int, seasonInfo: StandingsLists.standingsLists) 
     -> Belt.Option.flatMap(driverStandings => driverStandings.wins) 
     -> Belt.Option.getWithDefault("");
 
-  <div className=SeasonsListCSS.seasonRow key=string_of_int(index)>
+  <div className=SeasonsListCSS.seasonRow key=string_of_int(index) onClick=(_ => fetchSeasonDetailsAndOpenPage(season))>
     <div className=SeasonsListCSS.seasonYear>{React.string(season)}</div>
     <div className=SeasonsListCSS.separator></div>
     <div className=SeasonsListCSS.driverGivenName>{React.string(givenName)}</div>
@@ -48,16 +57,29 @@ let renderSeasonsList = (index: int, seasonInfo: StandingsLists.standingsLists) 
 };
 
 [@react.component]
-let make = (~listFromServer: option(StandingsTableResponse.response), ~errorsFromServer: Types.errors) => {
+let make = (~dispatch: Reducer.action => unit, ~listFromServer: option(StandingsTableResponse.response)) => {
+  let url: ReasonReactRouter.url = ReasonReactRouter.useUrl();
+
+  let dispatchAction = (state: State.state, errors: Types.errors) : unit => dispatch(Reducer.FetchedSeasonsList(state.seasonsList, errors));
+  
+  let (dataState: Types.uiDataState, setDataState: Types.setState(Types.uiDataState)) = React.useState(() => Types.Loaded);
+
   let seasonsList: list(StandingsLists.standingsLists) = listFromServer 
     -> Belt.Option.flatMap(response => response.mrdata) 
     -> Belt.Option.flatMap(mrdata => mrdata.standingsTable)
     -> Belt.Option.flatMap(standingsTable => standingsTable.standingsLists)
     -> GeneralHelper.flattenOptionOfList;
 
+  React.useEffect1(() => {
+    switch (seasonsList) {
+    |  [] => ignore(ComponentHelper.fetchDataAndDispatch(url, dispatchAction, setDataState))
+    | [head, ...tail] => ignore(Js.Promise.resolve())
+    };
+    None;
+  }, [|url|]);
+
   <div className=SeasonsListCSS.contents>
     <div className=SeasonsListCSS.title>{React.string("World Championship Winners")}</div>
-    
-    {ComponentHelper.renderList(seasonsList, renderSeasonsList)}
+    { ComponentHelper.renderList(seasonsList, renderSeasonsList) }
   </div>
 };

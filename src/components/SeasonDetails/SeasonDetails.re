@@ -43,18 +43,33 @@ let renderRacesList = (index: int, races: Races.races) : React.element => {
 };
 
 [@react.component]
-let make = (~winnerFromServer: option(string), ~detailsFromServer: option(SeasonResultsResponse.response), ~errorsFromServer: Types.errors) => {
-  let raceTableInfo = detailsFromServer 
+let make = (~dispatch: Reducer.action => unit, ~detailsFromServer: option(State.seasonDetails)) => {
+  let url: ReasonReactRouter.url = ReasonReactRouter.useUrl();
+
+  let dispatchAction = (state: State.state, errors: Types.errors) : unit => dispatch(Reducer.FetchedSeasonDetails(state.seasonDetails, errors));
+
+  let (dataState: Types.uiDataState, setDataState: Types.setState(Types.uiDataState)) = React.useState(() => Types.Loaded);
+
+  let raceTableInfo: option(RaceTable.raceTable) = detailsFromServer 
+    -> Belt.Option.flatMap(seasonDetails => seasonDetails.races) 
     -> Belt.Option.flatMap(response => response.mrdata) 
     -> Belt.Option.flatMap(mrdata => mrdata.raceTable);
-
-  let season = raceTableInfo
+  
+  let season: string = raceTableInfo
     -> Belt.Option.flatMap(raceTable => raceTable.season)
     -> Belt.Option.getWithDefault("????");
-
+  
   let racesList: list(Races.races) = raceTableInfo
     -> Belt.Option.flatMap(raceTable => raceTable.races)
     -> GeneralHelper.flattenOptionOfList;
+  
+  React.useEffect1(() => {
+    switch (racesList) {
+    |  [] => ignore(ComponentHelper.fetchDataAndDispatch(url, dispatchAction, setDataState))
+    | [head, ...tail] => ignore(Js.Promise.resolve())
+    };
+    None;
+  }, [|url|]);
     
   <div className=SeasonDetailsCSS.contents>
     <div className=SeasonDetailsCSS.title>{React.string(season ++ " Race Results")}</div>

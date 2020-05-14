@@ -16,7 +16,7 @@ let seasonPageForYear = (year: string) : Types.page => {
   };
 };
 
-let getPage = (url: ReasonReactRouter.url) : Types.page => {
+let getPageForUrl = (url: ReasonReactRouter.url) : Types.page => {
   switch (url.path) {
   | [] => SeasonsList
   | [season, year] when season === seasonURLPrefix => seasonPageForYear(year)

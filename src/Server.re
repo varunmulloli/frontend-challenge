@@ -3,7 +3,7 @@
 let app = Express.App.make();
 
 let renderHTML = (res: Express.Response.t, url: ReasonReactRouter.url, state: State.state, errors: list(string)) : Express.complete => {
-  let component: React.element = <App initialState=Some(state) initialErrors=errors url=url />;
+  let component: React.element = <App initialState=state initialErrors=errors url=url />;
   let content: string = component |> ReactDOMServerRe.renderToString |> renderStylesToString;
   let initialState: Js.Json.t = state |> State.encodeState;
   let initialErrors: Js.Json.t = Json.Encode.(errors |> list(string));
@@ -13,7 +13,7 @@ let renderHTML = (res: Express.Response.t, url: ReasonReactRouter.url, state: St
 
 let loadDataAndRenderHTML = (_next, _req, res) : Js.Promise.t(Express.complete) => {
   let url: ReasonReactRouter.url = URLHelper.extractURL(_req);
-  let page: Types.page = Routes.getPage(url);
+  let page: Types.page = Routes.getPageForUrl(url);
   let dataToFetch: option(unit => Js.Promise.t(Types.uidata(State.state))) = RouteData.getDataToFetch(page);
 
   switch(dataToFetch) {

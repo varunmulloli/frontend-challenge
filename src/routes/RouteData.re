@@ -14,14 +14,16 @@ let createStateFromSeasonsList = (seasonsList: resultSeasonList) : Types.uiresul
 };
 
 let createStateFromSeasonDetailsAndWinner = ((details: resultDetails, winner: resultWinner)) : Types.uiresult(State.state) => {
-  let stateWithErrors: Types.uidata(State.state) = 
+  let seasonDetailsUIData: Types.uidata(State.seasonDetails) = 
     switch ((details, winner)) {
-    | (Belt.Result.Ok(seasonDetails), Belt.Result.Ok(winningDriver)) => (State.createState(~seasonDetails, ~winningDriver, ()), [])
-    | (Belt.Result.Ok(seasonDetails), Belt.Result.Error(error)) => (State.createState(~seasonDetails, ()), [error])
-    | (Belt.Result.Error(error), Belt.Result.Ok(winningDriver)) => (State.createState(~winningDriver, ()), [error])
-    | (Belt.Result.Error(error1), Belt.Result.Error(error2)) => (State.createEmptyState(), [error1, error2])
+    | (Belt.Result.Ok(races), Belt.Result.Ok(winningDriver)) => (State.createSeasonDetails(Some(races), Some(winningDriver)), [])
+    | (Belt.Result.Ok(races), Belt.Result.Error(error)) => (State.createSeasonDetails(Some(races), None), [error])
+    | (Belt.Result.Error(error), Belt.Result.Ok(winningDriver)) => (State.createSeasonDetails(None, Some(winningDriver)), [error])
+    | (Belt.Result.Error(error1), Belt.Result.Error(error2)) => (State.createSeasonDetails(None, None), [error1, error2])
     };
-  Js.Promise.resolve(stateWithErrors);
+  
+  let (seasonDetails, errors) = seasonDetailsUIData;
+  Js.Promise.resolve((State.createFromSeasonDetails(seasonDetails), errors));
 };
 
 let fetchSeasonsList = () : Types.uiresult(State.state) => {

@@ -1,26 +1,24 @@
-type setData = State.state => unit;
-type setErrors = Types.setState(list(string));
-type setDataState = Types.setState(Types.uiDataState);
+type dispatchAction = (State.state, Types.errors) => unit;
+type setLoading = Types.setState(Types.uiDataState);
 
 let renderList = (listOfItems: list('a), component: (int, 'a) => React.element) : React.element => {
   listOfItems |> List.mapi(component) |> Array.of_list |> ReasonReact.array;
 };
 
-let fetchDataAndUpdateState = (url: ReasonReactRouter.url, setData: setData, setDataState: setDataState, setErrors: setErrors) : Js.Promise.t(unit) => {
-  let page: Types.page = Routes.getPage(url);
-  let dataToFetch: option(unit => Js.Promise.t(Types.uidata(State.state))) = RouteData.getDataToFetch(page);
-  
-  let setComponentStates = ((state: State.state, errors: list(string))) : Js.Promise.t(unit) => {
-    setData(state);
-    setErrors(_ => errors);
-    setDataState(_ => Types.Loaded);
+let fetchDataAndDispatch = (url: ReasonReactRouter.url, dispatchAction: dispatchAction, setLoading: setLoading) : Js.Promise.t(unit) => {
+  let performDispatchAction = ((state: State.state, errors: Types.errors)) : Js.Promise.t(unit) => {
+    ignore(dispatchAction(state, errors));
+    ignore(setLoading(_ => Types.Loaded));
     Js.Promise.resolve();
   };
 
   let fetchDataAndSetComponentState = (fetchData: unit => Js.Promise.t(Types.uidata(State.state))) : Js.Promise.t(unit) => {
-    setDataState(_ => Types.Loading);
-    fetchData() |> Js.Promise.then_(setComponentStates);
+    ignore(setLoading(_ => Types.Loading));
+    fetchData() |> Js.Promise.then_(performDispatchAction);
   };
+
+  let page: Types.page = Routes.getPageForUrl(url);
+  let dataToFetch: option(unit => Js.Promise.t(Types.uidata(State.state))) = RouteData.getDataToFetch(page);
 
   switch (dataToFetch) {
   | Some(fetchData) => fetchDataAndSetComponentState(fetchData)

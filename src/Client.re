@@ -1,17 +1,17 @@
 [@bs.scope "window"] [@bs.val] external encodedInitialState : Js.Nullable.t(Js.Json.t) = "__INITIAL_STATE__";
 [@bs.scope "window"] [@bs.val] external encodedInitialErrors : Js.Nullable.t(Js.Json.t) = "__INITIAL_ERRORS__";
 
-let flattenDecodedState = (decodedState: Types.result(State.state)) : (option(State.state), option(string)) => {
+let flattenDecodedState = (decodedState: Types.result(State.state)) : (State.state, option(string)) => {
   switch (decodedState) {
-  | Belt.Result.Ok(state) => (Some(state), None)
-  | Belt.Result.Error(error) => (None, Some(error))
+  | Belt.Result.Ok(state) => (state, None)
+  | Belt.Result.Error(error) => (State.createEmptyState(), Some(error))
   };
 };
 
-let flattenState = (maybeState: option(Types.result(State.state))) : (option(State.state), option(string)) => {
+let flattenState = (maybeState: option(Types.result(State.state))) : (State.state, option(string)) => {
   switch (maybeState) {
   | Some(decodedState) => flattenDecodedState(decodedState)
-  | None => (None, None)
+  | None => (State.createEmptyState(), None)
   };
 };
 
@@ -34,7 +34,7 @@ module ClientApp = {
     let url: ReasonReactRouter.url = ReasonReactRouter.useUrl();
 
     let decodedInitialState: option(Types.result(State.state)) = getInitialState();
-    let (initialState: option(State.state), stateDecodeError: option(string)) = flattenState(decodedInitialState);
+    let (initialState: State.state, stateDecodeError: option(string)) = flattenState(decodedInitialState);
 
     let decodedInitialErrors: list(string) = getInitialErrors();
     let initialErrors = 

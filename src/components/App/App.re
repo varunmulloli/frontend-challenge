@@ -1,12 +1,13 @@
 [@react.component]
-let make = (~initialState: option(State.state), ~initialErrors: list(string), ~url: ReasonReactRouter.url) => {
-  let page: Types.page = Routes.getPage(url);
-  let component: (option(State.state), list(string)) => React.element = RouteComponent.componentToRender(page);
+let make = (~initialState: State.state, ~initialErrors: Types.errors, ~url: ReasonReactRouter.url) => {  
+  let initialReducerState: Reducer.state = Reducer.createInitialReducerState(initialState, initialErrors);
+  let (rState: Reducer.state, dispatch: Reducer.action => unit) = React.useReducer(Reducer.reducer, initialReducerState);
 
+  let page: Types.page = Routes.getPageForUrl(url);
+  let component: (Reducer.state, Reducer.action => unit) => React.element = RouteComponent.componentToRender(page);
+ 
   <div className=AppCss.contents>
     <Header />
-    <div>
-      { component(initialState, initialErrors) }
-    </div>
+    { component(rState, dispatch) }
   </div>
 };

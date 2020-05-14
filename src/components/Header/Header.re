@@ -6,7 +6,7 @@ let pushRoute = (route: Types.page) => {
 let make = () => {
   <div className=HeaderCSS.headerContainer>
     <div className=HeaderCSS.logo>
-      <img src="/dist/f1_logo.svg" />
+      <img src="/dist/f1_logo.svg" onClick=(_ => pushRoute(Types.SeasonsList))/>
     </div>
   </div>
 };
