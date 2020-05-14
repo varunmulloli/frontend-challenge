@@ -5,6 +5,7 @@ var React = require("react");
 var Js_exn = require("bs-platform/lib/js/js_exn.js");
 var Express = require("bs-express/src/Express.js");
 var Process = require("process");
+var Caml_format = require("bs-platform/lib/js/caml_format.js");
 var Json_encode = require("@glennsl/bs-json/src/Json_encode.bs.js");
 var EmotionServer = require("emotion-server");
 var Server = require("react-dom/server");
@@ -55,6 +56,10 @@ Express.App.useOnPath(app, "/dist", Express.Static.asMiddleware(Express.Static.m
 
 Express.App.useOnPath(app, "/", Express.PromiseMiddleware.from(loadDataAndRenderHTML));
 
+var match = process.env.PORT;
+
+var port = (match == null) ? 3000 : Caml_format.caml_int_of_string(match);
+
 function onListen(e) {
   var val;
   try {
@@ -70,13 +75,11 @@ function onListen(e) {
       throw exn;
     }
   }
-  console.log("listening at localhost:" + String(3000));
+  console.log("listening at localhost:" + String(port));
   return /* () */0;
 }
 
-Express.App.listen(app, 3000, undefined, onListen, /* () */0);
-
-var port = 3000;
+Express.App.listen(app, port, undefined, onListen, /* () */0);
 
 exports.app = app;
 exports.renderHTML = renderHTML;
