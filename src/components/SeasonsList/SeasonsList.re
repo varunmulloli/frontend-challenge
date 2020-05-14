@@ -4,42 +4,45 @@ let fetchSeasonDetailsAndOpenPage = (year: string) : unit => {
   | Some(season) => Types.SeasonDetails(season)
   | None => Types.NotFound
   };
-  pageToRender |> Routes.pageURL |> ReasonReactRouter.push;
+  ignore(pageToRender |> Routes.pageURL |> ReasonReactRouter.push);
 };
 
 let renderSeasonsList = (index: int, seasonInfo: StandingsLists.standingsLists) : React.element => {
-  let season = seasonInfo.season -> Belt.Option.getWithDefault("????");
-  let driverStandingsInfo = seasonInfo.driverStandings 
+  let season: string = seasonInfo.season -> Belt.Option.getWithDefault("????");
+
+  let driverStandingsInfo: option(DriverStandings.driverStandings) = seasonInfo.driverStandings 
     -> GeneralHelper.flattenOptionOfList 
     -> Belt.List.head;
-  let driverInfo = driverStandingsInfo 
+
+  let driverInfo: option(Driver.driver) = driverStandingsInfo 
     -> Belt.Option.flatMap(driverStandings => driverStandings.driver);
-  let constructorsInfo: list(Constructor.constructor) = driverStandingsInfo 
-    -> Belt.Option.flatMap(driverStandings => driverStandings.constructors)
-    -> GeneralHelper.flattenOptionOfList;
   
-  let givenName = driverInfo 
+  let givenName: string = driverInfo 
     -> Belt.Option.flatMap(driver => driver.givenName) 
     -> Belt.Option.getWithDefault("");
     
-  let familyName = driverInfo 
+  let familyName: string = driverInfo 
     -> Belt.Option.flatMap(driver => driver.familyName) 
     -> Belt.Option.getWithDefault("");
   
-  let nationality = driverInfo 
+  let nationality: string = driverInfo 
     -> Belt.Option.flatMap(driver => driver.nationality) 
     -> Belt.Option.getWithDefault("");
 
-  let cars = constructorsInfo 
+  let constructorsInfo: list(Constructor.constructor) = driverStandingsInfo 
+    -> Belt.Option.flatMap(driverStandings => driverStandings.constructors)
+    -> GeneralHelper.flattenOptionOfList;
+
+  let cars: string = constructorsInfo 
     |> List.map((constructor: Constructor.constructor) => constructor.name) 
     |> GeneralHelper.flattenListOfOption
     |> GeneralHelper.joinListOfString(", ");
 
-  let points = driverStandingsInfo 
+  let points: string = driverStandingsInfo 
     -> Belt.Option.flatMap(driverStandings => driverStandings.points) 
     -> Belt.Option.getWithDefault("");
   
-  let wins = driverStandingsInfo 
+  let wins: string = driverStandingsInfo 
     -> Belt.Option.flatMap(driverStandings => driverStandings.wins) 
     -> Belt.Option.getWithDefault("");
 
@@ -57,14 +60,14 @@ let renderSeasonsList = (index: int, seasonInfo: StandingsLists.standingsLists) 
 };
 
 [@react.component]
-let make = (~dispatch: Reducer.action => unit, ~listFromServer: option(StandingsTableResponse.response)) => {
+let make = (~dispatch: Reducer.action => unit, ~seasonsListData: option(StandingsTableResponse.response)) : React.element => {
   let url: ReasonReactRouter.url = ReasonReactRouter.useUrl();
 
   let dispatchAction = (state: State.state, errors: Types.errors) : unit => dispatch(Reducer.FetchedSeasonsList(state.seasonsList, errors));
   
   let (dataState: Types.uiDataState, setDataState: Types.setState(Types.uiDataState)) = React.useState(() => Types.Loaded);
 
-  let seasonsList: list(StandingsLists.standingsLists) = listFromServer 
+  let seasonsList: list(StandingsLists.standingsLists) = seasonsListData 
     -> Belt.Option.flatMap(response => response.mrdata) 
     -> Belt.Option.flatMap(mrdata => mrdata.standingsTable)
     -> Belt.Option.flatMap(standingsTable => standingsTable.standingsLists)
@@ -72,7 +75,7 @@ let make = (~dispatch: Reducer.action => unit, ~listFromServer: option(Standings
 
   React.useEffect1(() => {
     switch (seasonsList) {
-    |  [] => ignore(ComponentHelper.fetchDataAndDispatch(url, dispatchAction, setDataState))
+    | [] => ignore(ComponentHelper.fetchDataAndDispatch(url, dispatchAction, setDataState))
     | [head, ...tail] => ignore(Js.Promise.resolve())
     };
     None;

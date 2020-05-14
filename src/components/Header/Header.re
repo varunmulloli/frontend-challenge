@@ -1,12 +1,12 @@
-let pushRoute = (route: Types.page) => {
-  route |> Routes.pageURL |> ReasonReactRouter.push;
+let navigateToHomePage = () : unit => {
+  Types.SeasonsList |> Routes.pageURL |> ReasonReactRouter.push;
 };
 
 [@react.component]
-let make = () => {
+let make = () : React.element => {
   <div className=HeaderCSS.headerContainer>
     <div className=HeaderCSS.logo>
-      <img src="/dist/f1_logo.svg" onClick=(_ => pushRoute(Types.SeasonsList))/>
+      <img src="/dist/f1_logo.svg" onClick=(_ => navigateToHomePage())/>
     </div>
   </div>
 };

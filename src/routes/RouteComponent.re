@@ -1,10 +1,10 @@
 let renderSeasonsList = (state: Reducer.state, dispatch: Reducer.action => unit) : React.element => {
-  <SeasonsList dispatch=dispatch listFromServer=state.seasonsList />
+  <SeasonsList dispatch=dispatch seasonsListData=state.seasonsList />
 };
 
 let renderSeasonDetails = (season: Types.season) => (state: Reducer.state, dispatch: Reducer.action => unit) : React.element => {
   let seasonDetails = Belt.Map.Int.get(state.seasonDetails, season);
-  <SeasonDetails dispatch=dispatch detailsFromServer=seasonDetails />
+  <SeasonDetails dispatch=dispatch seasonDetailsData=seasonDetails />
 };
 
 let componentToRender = (page: Types.page) : ((Reducer.state, Reducer.action => unit) => React.element) => {

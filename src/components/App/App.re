@@ -1,5 +1,5 @@
 [@react.component]
-let make = (~initialState: State.state, ~initialErrors: Types.errors, ~url: ReasonReactRouter.url) => {  
+let make = (~initialState: State.state, ~initialErrors: Types.errors, ~url: ReasonReactRouter.url) : React.element => {  
   let initialReducerState: Reducer.state = Reducer.createInitialReducerState(initialState, initialErrors);
   let (rState: Reducer.state, dispatch: Reducer.action => unit) = React.useReducer(Reducer.reducer, initialReducerState);
 

@@ -1,33 +1,32 @@
 let renderRacesList = (index: int, races: Races.races) : React.element => {
-  let gpName = races.raceName -> Belt.Option.getWithDefault("????");
+  let gpName: string = races.raceName -> Belt.Option.getWithDefault("????");
 
-  let date = races.date -> Belt.Option.getWithDefault("????");
+  let date: string = races.date -> Belt.Option.getWithDefault("????");
 
-  let resultDetails = races.results 
+  let resultDetails: option(Results.results) = races.results 
     -> GeneralHelper.flattenOptionOfList 
     -> Belt.List.head;
   
-  let driverInfo = resultDetails
-    -> Belt.Option.flatMap(result => result.driver);
-  let givenName = driverInfo 
+  let driverInfo: option(Driver.driver) = resultDetails -> Belt.Option.flatMap(result => result.driver);
+  let givenName: string = driverInfo 
     -> Belt.Option.flatMap(driver => driver.givenName) 
     -> Belt.Option.getWithDefault("");
-  let familyName = driverInfo 
+  let familyName: string = driverInfo 
     -> Belt.Option.flatMap(driver => driver.familyName) 
     -> Belt.Option.getWithDefault("");
-  let winningDriver = givenName ++ " " ++ familyName;
+  let winningDriver: string = givenName ++ " " ++ familyName;
 
-  let car = resultDetails
+  let car: string = resultDetails
     -> Belt.Option.flatMap(result => result.constructor)
     -> Belt.Option.flatMap(constructor => constructor.name)
     -> Belt.Option.getWithDefault("????")
     -> String.uppercase;
   
-  let laps = resultDetails
+  let laps: string = resultDetails
     -> Belt.Option.flatMap(result => result.laps)
     -> Belt.Option.getWithDefault("??");
   
-  let time = resultDetails
+  let time: string = resultDetails
     -> Belt.Option.flatMap(result => result.time)
     -> Belt.Option.flatMap(time => time.time)
     -> Belt.Option.getWithDefault("????");
@@ -43,14 +42,14 @@ let renderRacesList = (index: int, races: Races.races) : React.element => {
 };
 
 [@react.component]
-let make = (~dispatch: Reducer.action => unit, ~detailsFromServer: option(State.seasonDetails)) => {
+let make = (~dispatch: Reducer.action => unit, ~seasonDetailsData: option(State.seasonDetails)) : React.element => {
   let url: ReasonReactRouter.url = ReasonReactRouter.useUrl();
 
   let dispatchAction = (state: State.state, errors: Types.errors) : unit => dispatch(Reducer.FetchedSeasonDetails(state.seasonDetails, errors));
 
   let (dataState: Types.uiDataState, setDataState: Types.setState(Types.uiDataState)) = React.useState(() => Types.Loaded);
 
-  let raceTableInfo: option(RaceTable.raceTable) = detailsFromServer 
+  let raceTableInfo: option(RaceTable.raceTable) = seasonDetailsData 
     -> Belt.Option.flatMap(seasonDetails => seasonDetails.races) 
     -> Belt.Option.flatMap(response => response.mrdata) 
     -> Belt.Option.flatMap(mrdata => mrdata.raceTable);
@@ -65,7 +64,7 @@ let make = (~dispatch: Reducer.action => unit, ~detailsFromServer: option(State.
   
   React.useEffect1(() => {
     switch (racesList) {
-    |  [] => ignore(ComponentHelper.fetchDataAndDispatch(url, dispatchAction, setDataState))
+    | [] => ignore(ComponentHelper.fetchDataAndDispatch(url, dispatchAction, setDataState))
     | [head, ...tail] => ignore(Js.Promise.resolve())
     };
     None;
@@ -87,7 +86,7 @@ let make = (~dispatch: Reducer.action => unit, ~detailsFromServer: option(State.
       </thead>
 
       <tbody className=SeasonDetailsCSS.tableBody>
-        {ComponentHelper.renderList(racesList, renderRacesList)}
+        { ComponentHelper.renderList(racesList, renderRacesList) }
       </tbody>
     </table>
   </div>

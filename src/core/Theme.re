@@ -17,7 +17,7 @@ let titilliumWeb = fontFace(
   ~fontFamily="Titillium Web, sans-serif",
   ~src=[localUrl("Titillium Web")],
   ~fontStyle=normal,
-  ~fontWeight=`num(500),
+  ~fontWeight=`num(400),
   (),
 );
 

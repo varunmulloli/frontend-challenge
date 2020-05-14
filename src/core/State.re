@@ -47,19 +47,37 @@ let encodeState = (stateRecord: state) : Js.Json.t => Json.Encode.(
 
 let createEmptyState = () : state => createState(());
 
-let createFromSeasonsList = (seasonsList: StandingsTableResponse.response) : state => {
-  createState(~seasonsList, ());
+let flattenStateResult = (result: Types.result(state)) : Types.uidata(state) => {
+  switch (result) {
+  | Belt.Result.Ok(state) => (state, [])
+  | Belt.Result.Error(error) => (createEmptyState(), [error])
+  };
 };
 
-let createFromSeasonDetails = (seasonDetails: seasonDetails) : state => {
-  createState(~seasonDetails, ());
+let createStateFromSeasonsList = (seasonsListResult: Types.result(StandingsTableResponse.response)) : Types.uiresult(state) => {
+  Belt.Result.map(seasonsListResult, seasonsList => createState(~seasonsList, ())) 
+  |> flattenStateResult 
+  |> Js.Promise.resolve;
 };
 
 let createSeasonDetails = (races: option(SeasonResultsResponse.response), winningDriver: option(string)) : seasonDetails => {
   { races, winningDriver };
 };
 
-let addToSeasonDetailsMap = (currentMap: Belt.Map.Int.t(seasonDetails), seasonDetailsInfo: option(seasonDetails)) => {
+let createStateFromSeasonDetailsAndWinner = ((details: Types.result(SeasonResultsResponse.response), winner: Types.result(string))) : Types.uiresult(state) => {
+  let seasonDetailsUIData: Types.uidata(seasonDetails) = 
+    switch ((details, winner)) {
+    | (Belt.Result.Ok(races), Belt.Result.Ok(winningDriver)) => (createSeasonDetails(Some(races), Some(winningDriver)), [])
+    | (Belt.Result.Ok(races), Belt.Result.Error(error)) => (createSeasonDetails(Some(races), None), [error])
+    | (Belt.Result.Error(error), Belt.Result.Ok(winningDriver)) => (createSeasonDetails(None, Some(winningDriver)), [error])
+    | (Belt.Result.Error(error1), Belt.Result.Error(error2)) => (createSeasonDetails(None, None), [error1, error2])
+    };
+  
+  let (seasonDetails, errors) = seasonDetailsUIData;
+  Js.Promise.resolve((createState(~seasonDetails, ()), errors));
+};
+
+let addToSeasonDetailsMap = (currentMap: Belt.Map.Int.t(seasonDetails), seasonDetailsInfo: option(seasonDetails)) : Belt.Map.Int.t(seasonDetails) => {
   let addToMap = (seasonDetails: seasonDetails) => {
     let season = seasonDetails.races
     -> Belt.Option.flatMap(response => response.mrdata) 
