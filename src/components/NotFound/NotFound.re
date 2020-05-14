@@ -1,6 +1,6 @@
 [@react.component]
 let make = () : React.element => {
-  <div>
-    {React.string("404 Not Found")}
+  <div className=NotFoundCSS.container>
+    <div className=NotFoundCSS.title>{ React.string("404 Not Found") }</div>
   </div>
 };
