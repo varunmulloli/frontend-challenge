@@ -2,23 +2,23 @@
 
 let app = Express.App.make();
 
-let renderHTML = (res: Express.Response.t, url: ReasonReactRouter.url, state: State.state, errors: list(string)) : Express.complete => {
-  let component: React.element = <App initialState=state initialErrors=errors url=url />;
+let renderHTML = (res: Express.Response.t, url: ReasonReactRouter.url, responses: Responses.responses, errors: list(string)) : Express.complete => {
+  let component: React.element = <App initialResponses=responses initialErrors=errors url=url />;
   let content: string = component |> ReactDOMServerRe.renderToString |> renderStylesToString;
-  let initialState: Js.Json.t = state |> State.encodeState;
+  let initialResponses: Js.Json.t = responses |> Responses.encodeResponses;
   let initialErrors: Js.Json.t = Json.Encode.(errors |> list(string));
-  let htmlContent: string = Template.make(~content, ~initialState, ~initialErrors, ());
+  let htmlContent: string = Template.make(~content, ~initialResponses, ~initialErrors, ());
   Express.Response.sendString(htmlContent, res);
 };
 
 let loadDataAndRenderHTML = (_next, _req, res) : Js.Promise.t(Express.complete) => {
   let url: ReasonReactRouter.url = URLHelper.extractURL(_req);
   let page: Types.page = Routes.getPageForUrl(url);
-  let dataToFetch: option(unit => Js.Promise.t(Types.uidata(State.state))) = RouteData.getDataToFetch(page);
+  let dataToFetch: option(unit => Js.Promise.t(Types.uidata(Responses.responses))) = RouteData.getDataToFetch(page);
 
   switch(dataToFetch) {
-    | Some(fetchData) => Js.Promise.(fetchData() |> then_(((state: State.state, errors: list(string))) => renderHTML(res, url, state, errors) |> resolve ))
-    | None => renderHTML(res, url, State.createEmptyState(), []) |> Js.Promise.resolve
+    | Some(fetchData) => Js.Promise.(fetchData() |> then_(((responses: Responses.responses, errors: list(string))) => renderHTML(res, url, responses, errors) |> resolve ))
+    | None => renderHTML(res, url, ResponsesHelper.createEmptyResponses(), []) |> Js.Promise.resolve
   };
 };
 

@@ -42,10 +42,10 @@ let renderRacesList = (index: int, races: Races.races) : React.element => {
 };
 
 [@react.component]
-let make = (~dispatch: Reducer.action => unit, ~seasonDetailsData: option(State.seasonDetails)) : React.element => {
+let make = (~dispatch: Reducer.action => unit, ~seasonDetailsData: option(Responses.seasonDetails)) : React.element => {
   let url: ReasonReactRouter.url = ReasonReactRouter.useUrl();
 
-  let dispatchAction = (state: State.state, errors: Types.errors) : unit => dispatch(Reducer.FetchedSeasonDetails(state.seasonDetails, errors));
+  let dispatchAction = (responses: Responses.responses, errors: Types.errors) : unit => dispatch(Reducer.FetchedSeasonDetails(responses.seasonDetails, errors));
 
   let (dataState: Types.uiDataState, setDataState: Types.setState(Types.uiDataState)) = React.useState(() => Types.Loaded);
 

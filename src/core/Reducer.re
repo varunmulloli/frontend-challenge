@@ -1,23 +1,23 @@
 type action = 
   | FetchedSeasonsList(option(StandingsTableResponse.response), Types.errors)
-  | FetchedSeasonDetails(option(State.seasonDetails), Types.errors);
+  | FetchedSeasonDetails(option(Responses.seasonDetails), Types.errors);
 
 type state = {
   seasonsList: option(StandingsTableResponse.response),
-  seasonDetails: Belt.Map.Int.t(State.seasonDetails),
+  seasonDetails: Belt.Map.Int.t(Responses.seasonDetails),
   errors: Types.errors,
 };
 
-let reducer = (rState: state, rAction: action) : state => 
-  switch (rAction) {
-  | FetchedSeasonsList(seasonsList, errors) => { ...rState, seasonsList, errors }
-  | FetchedSeasonDetails(seasonDetails, errors) => { ...rState, errors, seasonDetails: State.addToSeasonDetailsMap(rState.seasonDetails, seasonDetails) }
+let reducer = (previousState: state, actionItem: action) : state => 
+  switch (actionItem) {
+  | FetchedSeasonsList(seasonsList, errors) => { ...previousState, seasonsList, errors }
+  | FetchedSeasonDetails(seasonDetails, errors) => { ...previousState, errors, seasonDetails: ResponsesHelper.addToSeasonDetailsMap(previousState.seasonDetails, seasonDetails) }
 };
 
-let createInitialReducerState = (initialState: State.state, initialErrors: Types.errors) : state => {
+let createInitialState = (initialResponses: Responses.responses, initialErrors: Types.errors) : state => {
   {
-    seasonsList: initialState.seasonsList,
-    seasonDetails: State.addToSeasonDetailsMap(Belt.Map.Int.empty, initialState.seasonDetails),
+    seasonsList: initialResponses.seasonsList,
+    seasonDetails: ResponsesHelper.addToSeasonDetailsMap(Belt.Map.Int.empty, initialResponses.seasonDetails),
     errors: initialErrors,
   };
 };

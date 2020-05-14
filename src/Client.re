@@ -1,24 +1,24 @@
-[@bs.scope "window"] [@bs.val] external encodedInitialState : Js.Nullable.t(Js.Json.t) = "__INITIAL_STATE__";
+[@bs.scope "window"] [@bs.val] external encodedInitialResponses : Js.Nullable.t(Js.Json.t) = "__INITIAL_RESPONSES__";
 [@bs.scope "window"] [@bs.val] external encodedInitialErrors : Js.Nullable.t(Js.Json.t) = "__INITIAL_ERRORS__";
 
-let flattenDecodedState = (decodedState: Types.result(State.state)) : (State.state, option(string)) => {
-  switch (decodedState) {
-  | Belt.Result.Ok(state) => (state, None)
-  | Belt.Result.Error(error) => (State.createEmptyState(), Some(error))
+let flattenDecodedResponses = (decodedResponses: Types.result(Responses.responses)) : (Responses.responses, option(string)) => {
+  switch (decodedResponses) {
+  | Belt.Result.Ok(responses) => (responses, None)
+  | Belt.Result.Error(error) => (ResponsesHelper.createEmptyResponses(), Some(error))
   };
 };
 
-let flattenState = (maybeState: option(Types.result(State.state))) : (State.state, option(string)) => {
-  switch (maybeState) {
-  | Some(decodedState) => flattenDecodedState(decodedState)
-  | None => (State.createEmptyState(), None)
+let flattenResponses = (maybeResponses: option(Types.result(Responses.responses))) : (Responses.responses, option(string)) => {
+  switch (maybeResponses) {
+  | Some(decodedResponses) => flattenDecodedResponses(decodedResponses)
+  | None => (ResponsesHelper.createEmptyResponses(), None)
   };
 };
 
-let getInitialState = () : option(Types.result(State.state)) => { 
-  encodedInitialState 
+let getInitialResponses = () : option(Types.result(Responses.responses)) => { 
+  encodedInitialResponses 
   -> Js.Nullable.toOption 
-  -> Belt.Option.map(State.decodeState);
+  -> Belt.Option.map(Responses.decodeResponses);
 };
 
 let getInitialErrors = () : list(string) => { 
@@ -33,23 +33,23 @@ module ClientApp = {
   let make = () => {
     let url: ReasonReactRouter.url = ReasonReactRouter.useUrl();
 
-    let decodedInitialState: option(Types.result(State.state)) = getInitialState();
-    let (initialState: State.state, stateDecodeError: option(string)) = flattenState(decodedInitialState);
+    let decodedInitialResponses: option(Types.result(Responses.responses)) = getInitialResponses();
+    let (initialResponses: Responses.responses, responsesDecodeError: option(string)) = flattenResponses(decodedInitialResponses);
 
     let decodedInitialErrors: list(string) = getInitialErrors();
     let initialErrors = 
-      switch (stateDecodeError) {
+      switch (responsesDecodeError) {
       | Some(error) => [ error, ...decodedInitialErrors ]
       | None => decodedInitialErrors
       };
 
     React.useEffect0(() => {
-      ignore([%raw "delete window.__INITIAL_STATE__"]);
+      ignore([%raw "delete window.__INITIAL_RESPONSES__"]);
       ignore([%raw "delete window.__INITIAL_ERRORS__"]);
       None;
     });  
 
-    <App initialState=initialState initialErrors=initialErrors url=url />
+    <App initialResponses=initialResponses initialErrors=initialErrors url=url />
   };
 };
 

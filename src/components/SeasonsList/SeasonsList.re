@@ -63,7 +63,7 @@ let renderSeasonsList = (index: int, seasonInfo: StandingsLists.standingsLists) 
 let make = (~dispatch: Reducer.action => unit, ~seasonsListData: option(StandingsTableResponse.response)) : React.element => {
   let url: ReasonReactRouter.url = ReasonReactRouter.useUrl();
 
-  let dispatchAction = (state: State.state, errors: Types.errors) : unit => dispatch(Reducer.FetchedSeasonsList(state.seasonsList, errors));
+  let dispatchAction = (responses: Responses.responses, errors: Types.errors) : unit => dispatch(Reducer.FetchedSeasonsList(responses.seasonsList, errors));
   
   let (dataState: Types.uiDataState, setDataState: Types.setState(Types.uiDataState)) = React.useState(() => Types.Loaded);
 

@@ -1,14 +1,14 @@
-let fetchSeasonsList = () : Types.uiresult(State.state) => {
-  F1API.fetchSeasonsList() |> Js.Promise.then_(State.createStateFromSeasonsList);
+let fetchSeasonsList = () : Types.uiresult(Responses.responses) => {
+  F1API.fetchSeasonsList() |> Js.Promise.then_(ResponsesHelper.createResponsesFromSeasonsList);
 };
 
-let fetchSeasonDetailsAndWinner = (season: Types.season) => () : Types.uiresult(State.state) => {
+let fetchSeasonDetailsAndWinner = (season: Types.season) => () : Types.uiresult(Responses.responses) => {
   let seasonDetailsPromise = F1API.fetchSeasonDetails(season);
   let winnerPromise = F1API.fetchWinningDriverForSeason(season);
-  Js.Promise.(all2((seasonDetailsPromise, winnerPromise)) |> then_(State.createStateFromSeasonDetailsAndWinner));
+  Js.Promise.(all2((seasonDetailsPromise, winnerPromise)) |> then_(ResponsesHelper.createResponsesFromSeasonDetailsAndWinner));
 };
 
-let getDataToFetch = (page: Types.page) : option(unit => Js.Promise.t(Types.uidata(State.state))) => {
+let getDataToFetch = (page: Types.page) : option(unit => Js.Promise.t(Types.uidata(Responses.responses))) => {
   switch page {
   | Types.SeasonsList => Some(fetchSeasonsList)
   | Types.SeasonDetails(season) => Some(fetchSeasonDetailsAndWinner(season))
