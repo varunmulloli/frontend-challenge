@@ -8,4 +8,4 @@ npm-debug.log
 /.cache/
 /dist/*
 !/dist/*.ico
-*.bs.js
+

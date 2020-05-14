@@ -9,7 +9,8 @@
     "server": "nodemon --watch src src/Server.bs.js",
     "start": "node src/Server.bs.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "bsb -make-world -w -ws _ "
+    "watch": "bsb -make-world -w -ws _ ",
+    "heroku-postbuild": "echo \"No build required\" && exit 1"
   },
   "author": "varunmulloli",
   "license": "MIT",
