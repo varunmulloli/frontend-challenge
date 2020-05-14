@@ -13,6 +13,7 @@ let textSecondaryColor = rgb(103,103,109);
 let textInvertedColor = hex("ffffff");
 let hoverColor = hex("38383f");
 let errorColor = hex("a63232");
+let highlightColor = hex("FFFF8D");
 
 let titilliumWeb = fontFace(
   ~fontFamily="Titillium Web, sans-serif",

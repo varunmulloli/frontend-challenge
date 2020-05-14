@@ -35,12 +35,14 @@ let headerRow = style([
   ]),
 ]);
 
-let tableBody = style([
-  selector("tr", [
-    height(px(50)),
-  ]),
-  selector("tr:nth-child(even)", [
-    background(Theme.backgroundColor)
+let normalTableRow = style([
+  height(px(50)),
+]);
+
+let highlightedTableRow = merge([
+  normalTableRow,
+  style([
+    background(Theme.highlightColor),
   ]),
 ]);
 

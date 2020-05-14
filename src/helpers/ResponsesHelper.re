@@ -15,11 +15,11 @@ let createResponsesFromSeasonsList = (seasonsListResult: Types.result(StandingsT
   |> Js.Promise.resolve;
 };
 
-let createSeasonDetails = (races: option(SeasonResultsResponse.response), winningDriver: option(string)) : Responses.seasonDetails => {
+let createSeasonDetails = (races: option(SeasonResultsResponse.response), winningDriver: option(StandingsTableResponse.response)) : Responses.seasonDetails => {
   { races, winningDriver };
 };
 
-let createResponsesFromSeasonDetailsAndWinner = ((details: Types.result(SeasonResultsResponse.response), winner: Types.result(string))) : Types.uiresult(Responses.responses) => {
+let createResponsesFromSeasonDetailsAndWinner = ((details: Types.result(SeasonResultsResponse.response), winner: Types.result(StandingsTableResponse.response))) : Types.uiresult(Responses.responses) => {
   let seasonDetailsUIData: Types.uidata(Responses.seasonDetails) = 
     switch ((details, winner)) {
     | (Belt.Result.Ok(races), Belt.Result.Ok(winningDriver)) => (createSeasonDetails(Some(races), Some(winningDriver)), [])

@@ -4,8 +4,8 @@ let fetchSeasonsList = () : Types.uiresult(Responses.responses) => {
 
 let fetchSeasonDetailsAndWinner = (season: Types.season) => () : Types.uiresult(Responses.responses) => {
   let seasonDetailsPromise = F1API.fetchSeasonDetails(season);
-  let winnerPromise = F1API.fetchWinningDriverForSeason(season);
-  Js.Promise.(all2((seasonDetailsPromise, winnerPromise)) |> then_(ResponsesHelper.createResponsesFromSeasonDetailsAndWinner));
+  let winningDriverPromise = F1API.fetchWinningDriverForSeason(season);
+  Js.Promise.(all2((seasonDetailsPromise, winningDriverPromise)) |> then_(ResponsesHelper.createResponsesFromSeasonDetailsAndWinner));
 };
 
 let getDataToFetch = (page: Types.page) : option(unit => Js.Promise.t(Types.uidata(Responses.responses))) => {

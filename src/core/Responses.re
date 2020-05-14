@@ -1,6 +1,6 @@
 type seasonDetails = {
   races: option(SeasonResultsResponse.response),
-  winningDriver: option(string),
+  winningDriver: option(StandingsTableResponse.response),
 }
 
 type responses = {
@@ -16,7 +16,7 @@ let createResponses = (~seasonsList=?, ~seasonDetails=?, ()) : responses => {
 };
 
 let decodeSeasonDetailsUnsafe = (json: Js.Json.t) : seasonDetails => Json.Decode.{
-  winningDriver: json |> optional(field("winningDriver", string)),
+  winningDriver: json |> optional(field("winningDriver", StandingsTableResponse.decodeResponseUnsafe)),
   races: json |> optional(field("races", SeasonResultsResponse.decodeResponseUnsafe)),
 };
 
@@ -33,7 +33,7 @@ let decodeResponses = (json: Js.Json.t) : Types.result(responses) => {
 
 let encodeSeasonDetails = (seasonDetailsRecord: seasonDetails) : Js.Json.t => Json.Encode.(
   object_([
-    ("winningDriver", seasonDetailsRecord.winningDriver |> nullable(string)),
+    ("winningDriver", seasonDetailsRecord.winningDriver |> nullable(StandingsTableResponse.encodeResponse)),
     ("races", seasonDetailsRecord.races |> nullable(SeasonResultsResponse.encodeResponse)),
   ])
 );

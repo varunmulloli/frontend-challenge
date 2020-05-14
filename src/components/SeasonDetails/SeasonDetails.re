@@ -1,4 +1,9 @@
-let renderRacesList = (index: int, races: Races.races) : React.element => {
+let driverWonChampionship = (driverId: option(string), winningDriverId: option(string)) : bool => {
+  let equalStrings = (s1: string, s2: string) : bool => s1 === s2;
+  Belt.Option.eq(driverId, winningDriverId, equalStrings);
+};
+
+let renderRacesList = (winningDriverId: option(string)) => (index: int, races: Races.races) : React.element => {
   let gpName: string = races.raceName -> Belt.Option.getWithDefault("????");
 
   let date: string = races.date -> Belt.Option.getWithDefault("????");
@@ -8,13 +13,15 @@ let renderRacesList = (index: int, races: Races.races) : React.element => {
     -> Belt.List.head;
   
   let driverInfo: option(Driver.driver) = resultDetails -> Belt.Option.flatMap(result => result.driver);
+  let driverId = driverInfo -> Belt.Option.flatMap(driver => driver.driverId);
   let givenName: string = driverInfo 
     -> Belt.Option.flatMap(driver => driver.givenName) 
     -> Belt.Option.getWithDefault("");
   let familyName: string = driverInfo 
     -> Belt.Option.flatMap(driver => driver.familyName) 
     -> Belt.Option.getWithDefault("");
-  let winningDriver: string = givenName ++ " " ++ familyName;
+  let driverName: string = givenName ++ " " ++ familyName;
+  let isChampion = driverWonChampionship(driverId, winningDriverId);
 
   let car: string = resultDetails
     -> Belt.Option.flatMap(result => result.constructor)
@@ -30,18 +37,20 @@ let renderRacesList = (index: int, races: Races.races) : React.element => {
     -> Belt.Option.flatMap(result => result.time)
     -> Belt.Option.flatMap(time => time.time)
     -> Belt.Option.getWithDefault("????");
+  
+  let rowClassName = isChampion ? SeasonDetailsCSS.highlightedTableRow : SeasonDetailsCSS.normalTableRow;
 
-  <tr key=string_of_int(index)>
+  <tr key=string_of_int(index) className=rowClassName>
     <td>{React.string(gpName)}</td>
     <td className=SeasonDetailsCSS.dateColumn>{React.string(date)}</td>
-    <td>{React.string(winningDriver)}</td>
+    <td>{React.string(driverName)}</td>
     <td>{React.string(car)}</td>
     <td>{React.string(laps)}</td>
     <td>{React.string(time)}</td>
   </tr>
 };
 
-let renderSeasonDetails = (season: string, racesList: list(Races.races)) : React.element => {
+let renderSeasonDetails = (season: string, racesList: list(Races.races), winningDriverId: option(string)) : React.element => {
   <>
     <div className=SeasonDetailsCSS.title>{React.string(season ++ " Race Results")}</div>
 
@@ -57,8 +66,8 @@ let renderSeasonDetails = (season: string, racesList: list(Races.races)) : React
         </tr>
       </thead>
 
-      <tbody className=SeasonDetailsCSS.tableBody>
-        { ComponentHelper.renderList(racesList, renderRacesList) }
+      <tbody>
+        { ComponentHelper.renderList(racesList, renderRacesList(winningDriverId)) }
       </tbody>
     </table>
   </>
@@ -84,6 +93,19 @@ let make = (~dispatch: Reducer.action => unit, ~seasonDetailsData: option(Respon
   let racesList: list(Races.races) = raceTableInfo
     -> Belt.Option.flatMap(raceTable => raceTable.races)
     -> GeneralHelper.flattenOptionOfList;
+
+  let winningDriverId: option(string) = seasonDetailsData 
+    -> Belt.Option.flatMap(seasonDetails => seasonDetails.winningDriver) 
+    -> Belt.Option.flatMap(response => response.mrdata) 
+    -> Belt.Option.flatMap(mrdata => mrdata.standingsTable)
+    -> Belt.Option.flatMap(standingsTable => standingsTable.standingsLists)
+    -> GeneralHelper.flattenOptionOfList
+    -> Belt.List.head
+    -> Belt.Option.flatMap(standingsLists => standingsLists.driverStandings)
+    -> GeneralHelper.flattenOptionOfList
+    -> Belt.List.head
+    -> Belt.Option.flatMap(driverStandings => driverStandings.driver)
+    -> Belt.Option.flatMap(driver => driver.driverId);
   
   React.useEffect1(() => {
     switch (racesList) {
@@ -97,7 +119,7 @@ let make = (~dispatch: Reducer.action => unit, ~seasonDetailsData: option(Respon
     {
       switch (dataState) {
       | Types.Loading => <Spinner />
-      | Types.Loaded => renderSeasonDetails(season, racesList)
+      | Types.Loaded => renderSeasonDetails(season, racesList, winningDriverId)
       };
     }
   </div>
