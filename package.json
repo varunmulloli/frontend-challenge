@@ -2,15 +2,14 @@
   "name": "fincompare-frontend-challenge",
   "version": "0.1.0",
   "scripts": {
-    "build": "bsb -make-world && parcel build src/Client.bs.js -o client.js --public-url /dist/",
+    "build-prod": "bsb -make-world && parcel build src/Client.bs.js -o client.js --public-url /dist/",
     "bundle": "parcel watch src/Client.bs.js -o client.js --public-url /dist/",
     "clean": "bsb -clean-world",
     "dev": "npm-run-all --parallel watch bundle",
     "server": "nodemon --watch src src/Server.bs.js",
     "start": "node src/Server.bs.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "bsb -make-world -w -ws _ ",
-    "heroku-postbuild": "echo \"No build required\" && exit 1"
+    "watch": "bsb -make-world -w -ws _ "
   },
   "author": "varunmulloli",
   "license": "MIT",
