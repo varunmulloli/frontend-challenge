@@ -5,7 +5,7 @@ var APIHelper$FincompareFrontendChallenge = require("../helpers/APIHelper.bs.js"
 var SeasonResultsResponse$FincompareFrontendChallenge = require("../records/SeasonResultsResponse.bs.js");
 var StandingsTableResponse$FincompareFrontendChallenge = require("../records/StandingsTableResponse.bs.js");
 
-var baseURL = "http://ergast.com/api/f1";
+var baseURL = "https://ergast.com/api/f1";
 
 function decodeStandingsTableResponse(json) {
   return Promise.resolve(Belt_Result.flatMap(json, StandingsTableResponse$FincompareFrontendChallenge.decodeResponse));
@@ -16,7 +16,7 @@ function decodeSeasonResultsResponse(json) {
 }
 
 function fetchSeasonsList(param) {
-  return APIHelper$FincompareFrontendChallenge.makeRequest("http://ergast.com/api/f1/driverstandings/1.json?limit=11&offset=55").then(decodeStandingsTableResponse);
+  return APIHelper$FincompareFrontendChallenge.makeRequest("https://ergast.com/api/f1/driverstandings/1.json?limit=11&offset=55").then(decodeStandingsTableResponse);
 }
 
 function fetchSeasonDetails(season) {

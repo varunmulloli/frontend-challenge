@@ -1,4 +1,4 @@
-let baseURL = "http://ergast.com/api/f1";
+let baseURL = "https://ergast.com/api/f1";
 
 let decodeStandingsTableResponse = (json: Types.result(Js.Json.t)) : Types.future(StandingsTableResponse.response) => {
   Belt.Result.flatMap(json, StandingsTableResponse.decodeResponse) |> Js.Promise.resolve;
