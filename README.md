@@ -12,9 +12,16 @@ The libraries used in this application are mostly the BuckleScript bindings for 
 
 ## Code Organisation
 All source code are in the `src/` folder and unit tests are in the `__tests__/` folder. Once the code is built, all ReasonML files (with `.re` extension) will be compiled to their corresponding JavaScript files (having the extension `*.bs.js`) in the same folder. 
-There are two files in the `src/` folder: `Server.re` and `Client.re`. `Server.re` has the server creation code and it's compiled form `Server.bs.js` is used to start the Node.js server. `Client.re` is the root of the single page application and it's compiled form `Client.bs.js` is used as the entry point to Parcel, which will bundle all `.js` files and places it in `/dist/client.js`.
+There are two files in the `src/` folder: `Server.re` and `Client.re`. `Server.re` has the server creation code and it's compiled form `Server.bs.js` is used to start the Node.js server. `Client.re` is the root of the single page application and it's compiled form `Client.bs.js` is used as the entry point to Parcel, which will bundle all `.js` files and places it in `dist/client.js`. `dist/` is the folder from where the static files are being served, so it also contains other media like images as well.
 
+* `src/api` has the code for interacting with external services
+* `src/components` has all the React components that are used to build up the page.
+* `src/core` has some core modules used in the application like types, reducer etc. As the application grows, each of these may be moved to a folder of their own. 
+* `src/helpers` has some utility modules shared across the app.
+* `src/records` contains the types for the responses from external services.
+* `src/routes` has the route configuration files, that can be used by both server and client.
 
+## Architecture
 
 
 The purpose of this challenge is to let the developer show familiarity and skills with frontend technologies by creating a simple app using what its judges best, regarding patterns, libraries, and architeture.
