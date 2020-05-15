@@ -53,14 +53,18 @@ npm start
 ```
 The node version used is 12.16.3 LTS.
 
-To run the code for development, run
-
+To run the code for development, execute
 ```
 npm run dev
 ```
 on one tab and in the next tab run
 ```
 npm run server
+```
+
+To run unit tests, execute
+```
+npm run test
 ```
 
 ## ReasonML special syntaxes used in the code
