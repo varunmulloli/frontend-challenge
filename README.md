@@ -51,7 +51,7 @@ npm install
 npm run build
 npm start
 ```
-The node version used is 12.16.3 LTS.
+The app can be opened at http://localhost:3000/. Please note that the node version used is 12.16.3 LTS.
 
 To run the code for development, execute
 ```
