@@ -85,8 +85,17 @@ var headerRow = Curry._1(Css.style, /* :: */[
     ]);
 
 var normalTableRow = Curry._1(Css.style, /* :: */[
-      Css.height(Css.px(50)),
-      /* [] */0
+      Css.height(Css.px(60)),
+      /* :: */[
+        Css.borderBottom(Css.px(2), Css.solid, Theme$FincompareFrontendChallenge.backgroundColor),
+        /* :: */[
+          Css.selector(":last-child", /* :: */[
+                Css.borderBottom(Css.px(0), Css.solid, Theme$FincompareFrontendChallenge.backgroundColor),
+                /* [] */0
+              ]),
+          /* [] */0
+        ]
+      ]
     ]);
 
 var highlightedTableRow = Curry._1(Css.merge, /* :: */[
@@ -94,7 +103,10 @@ var highlightedTableRow = Curry._1(Css.merge, /* :: */[
       /* :: */[
         Curry._1(Css.style, /* :: */[
               Css.background(Theme$FincompareFrontendChallenge.highlightColor),
-              /* [] */0
+              /* :: */[
+                Css.borderBottom(Css.px(2), Css.solid, Theme$FincompareFrontendChallenge.foregroundColor),
+                /* [] */0
+              ]
             ]),
         /* [] */0
       ]

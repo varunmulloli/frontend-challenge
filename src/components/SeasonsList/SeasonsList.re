@@ -74,7 +74,8 @@ let make = (~dispatch: Reducer.action => unit, ~seasonsListData: option(Standing
     -> Belt.Option.flatMap(response => response.mrdata) 
     -> Belt.Option.flatMap(mrdata => mrdata.standingsTable)
     -> Belt.Option.flatMap(standingsTable => standingsTable.standingsLists)
-    -> GeneralHelper.flattenOptionOfList;
+    -> GeneralHelper.flattenOptionOfList
+    -> List.rev;
 
   React.useEffect1(() => {
     switch (seasonsList) {

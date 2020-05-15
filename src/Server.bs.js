@@ -5,7 +5,8 @@ var React = require("react");
 var Js_exn = require("bs-platform/lib/js/js_exn.js");
 var Express = require("bs-express/src/Express.js");
 var Process = require("process");
-var Caml_format = require("bs-platform/lib/js/caml_format.js");
+var Belt_Option = require("bs-platform/lib/js/belt_Option.js");
+var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var Json_encode = require("@glennsl/bs-json/src/Json_encode.bs.js");
 var EmotionServer = require("emotion-server");
 var Server = require("react-dom/server");
@@ -16,6 +17,7 @@ var Template$FincompareFrontendChallenge = require("./core/Template.bs.js");
 var Responses$FincompareFrontendChallenge = require("./core/Responses.bs.js");
 var RouteData$FincompareFrontendChallenge = require("./routes/RouteData.bs.js");
 var URLHelper$FincompareFrontendChallenge = require("./helpers/URLHelper.bs.js");
+var GeneralHelper$FincompareFrontendChallenge = require("./helpers/GeneralHelper.bs.js");
 var ResponsesHelper$FincompareFrontendChallenge = require("./helpers/ResponsesHelper.bs.js");
 
 var app = Express.App.make(/* () */0);
@@ -56,9 +58,7 @@ Express.App.useOnPath(app, "/dist", Express.Static.asMiddleware(Express.Static.m
 
 Express.App.useOnPath(app, "/", Express.PromiseMiddleware.from(loadDataAndRenderHTML));
 
-var match = process.env.PORT;
-
-var port = (match == null) ? 3000 : Caml_format.caml_int_of_string(match);
+var port = Belt_Option.getWithDefault(Belt_Option.flatMap((process.env.PORT == null) ? undefined : Caml_option.some(process.env.PORT), GeneralHelper$FincompareFrontendChallenge.$$parseInt), 3000);
 
 function onListen(e) {
   var val;

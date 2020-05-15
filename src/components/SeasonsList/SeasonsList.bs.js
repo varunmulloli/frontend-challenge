@@ -92,13 +92,13 @@ function SeasonsList(Props) {
           return /* Loaded */1;
         }));
   var setDataState = match[1];
-  var seasonsList = GeneralHelper$FincompareFrontendChallenge.flattenOptionOfList(Belt_Option.flatMap(Belt_Option.flatMap(Belt_Option.flatMap(seasonsListData, (function (response) {
-                      return response[/* mrdata */0];
-                    })), (function (mrdata) {
-                  return mrdata[/* standingsTable */6];
-                })), (function (standingsTable) {
-              return standingsTable[/* standingsLists */1];
-            })));
+  var seasonsList = List.rev(GeneralHelper$FincompareFrontendChallenge.flattenOptionOfList(Belt_Option.flatMap(Belt_Option.flatMap(Belt_Option.flatMap(seasonsListData, (function (response) {
+                          return response[/* mrdata */0];
+                        })), (function (mrdata) {
+                      return mrdata[/* standingsTable */6];
+                    })), (function (standingsTable) {
+                  return standingsTable[/* standingsLists */1];
+                }))));
   React.useEffect((function () {
           if (seasonsList) {
             Promise.resolve(/* () */0);

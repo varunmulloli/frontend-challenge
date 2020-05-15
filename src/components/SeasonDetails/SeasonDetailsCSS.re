@@ -36,13 +36,18 @@ let headerRow = style([
 ]);
 
 let normalTableRow = style([
-  height(px(50)),
+  height(px(60)),
+  borderBottom(px(2),solid,Theme.backgroundColor),
+  selector(":last-child", [
+    borderBottom(px(0),solid,Theme.backgroundColor),
+  ]),
 ]);
 
 let highlightedTableRow = merge([
   normalTableRow,
   style([
     background(Theme.highlightColor),
+    borderBottom(px(2),solid,Theme.foregroundColor),
   ]),
 ]);
 

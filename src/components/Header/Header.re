@@ -7,7 +7,7 @@ let make = () : React.element => {
   <div className=HeaderCSS.headerContainer>
     <div>
       <img 
-        src="/dist/f1_logo.png" 
+        src="/dist/f1_logo.svg" 
         onClick=(_ => navigateToHomePage()) 
         className=HeaderCSS.logo 
         alt="Go to Homepage" 

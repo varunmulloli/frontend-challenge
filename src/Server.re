@@ -1,5 +1,5 @@
+[@bs.val] external suppliedPort : Js.Nullable.t(string) = "process.env.PORT";
 [@bs.module "emotion-server"] external renderStylesToString : string => string = "renderStylesToString";
-[@bs.val] external envPort : Js.Nullable.t(string) = "process.env.PORT";
 
 let app = Express.App.make();
 
@@ -36,11 +36,10 @@ loadDataAndRenderHTML
 |> Express.PromiseMiddleware.from
 |> Express.App.useOnPath(~path="/", app);
 
-let port = 
-  switch (Js.Nullable.toOption(envPort)) {
-  | Some(port) => int_of_string(port)
-  | None => 3000
-};
+let port: int = suppliedPort 
+  -> Js.Nullable.toOption
+  -> Belt.Option.flatMap(GeneralHelper.parseInt)
+  -> Belt.Option.getWithDefault(3000);
 
 let onListen = e => switch e {
   | exception (Js.Exn.Error(e)) =>

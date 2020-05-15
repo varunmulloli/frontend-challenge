@@ -16,7 +16,7 @@ function Header(Props) {
                       className: HeaderCSS$FincompareFrontendChallenge.logo,
                       title: "Go to Homepage",
                       alt: "Go to Homepage",
-                      src: "/dist/f1_logo.png",
+                      src: "/dist/f1_logo.svg",
                       onClick: (function (param) {
                           return ReasonReactRouter.push(Routes$FincompareFrontendChallenge.pageURL(/* SeasonsList */0));
                         })
