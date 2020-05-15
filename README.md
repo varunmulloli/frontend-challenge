@@ -1,7 +1,23 @@
 # FinCompare Front-end Challenge
 
-The purpose of this challenge is to let the developer show familiarity and skills with frontend technologies by creating a simple app using what its judges best, regarding patterns, libraries, and architeture.
+The application is built as a single page application with server side rendering using React. It uses ReasonML for type safe development and BuckleScript for compiling ReasonML code to JavaScript. Parcel is used to bundle the compiled `.js` files.
+The libraries used in this application are mostly the BuckleScript bindings for popularly used libraries, and a few that are specifically required for ReasonML. A few of them are:
 
+* `bs-platform` - The BuckleScript compiler
+* `bs-express` - BuckleScript bindings for Express.js
+* `bs-css` - Bindings for the CSS-in-JS library Emotion
+* `bs-fetch` - Bindings for fetch
+* `bs-jest` - Bindings for Jest
+* `bs-json` - For type safe JSON handling.
+
+## Code Organisation
+All source code are in the `src/` folder and unit tests are in the `__tests__/` folder. Once the code is built, all ReasonML files (with `.re` extension) will be compiled to their corresponding JavaScript files (having the extension `*.bs.js`) in the same folder. 
+There are two files in the `src/` folder: `Server.re` and `Client.re`. `Server.re` has the server creation code and it's compiled form `Server.bs.js` is used to start the Node.js server. `Client.re` is the root of the single page application and it's compiled form `Client.bs.js` is used as the entry point to Parcel, which will bundle all `.js` files and places it in `/dist/client.js`.
+
+
+
+
+The purpose of this challenge is to let the developer show familiarity and skills with frontend technologies by creating a simple app using what its judges best, regarding patterns, libraries, and architeture.
 
 ## The Challenge
 
