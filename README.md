@@ -35,25 +35,26 @@ When a URL change is triggered within the application, the root component of the
 By this way, if the same page is opened multiple times (without refreshing), data is fetched only once from the external service. If the data is of dynamic nature, it can be fetched on every page load by removing the validity check in the component.
 
 ## How to run the code
+The application is deployed and is running on https://f1-mulloli.herokuapp.com/
 
-The purpose of this challenge is to let the developer show familiarity and skills with frontend technologies by creating a simple app using what its judges best, regarding patterns, libraries, and architeture.
+To run the code locally, 
 
-## The Challenge
+```
+npm install
+npm run build
+npm start
+```
+The node version used is 12.16.3 LTS.
 
-We'll use the [Ergast API](http://ergast.com/mrd/) to create a single page application that
-presents a list that shows the F1 world champions starting from 2005 until
-2015. Clicking on an item shows the list of the winners for every race for
-the selected year. We also request to highlight the row when the winner
-has been the world champion in the same season.
+To run the code for development, run
 
-Feel free to create the UI the way you think it's best, just make sure it's clean, understandable and it's a single page application. The main goal here is to check your skills with CSS or whatever you use to style your project.
+```
+npm run dev
+```
+on one tab and in the next tab run
+```
+npm run server
+```
 
-## Delivery
-
-Please use Github to send us your challenge, if you could fork this repo would be even better.
-
-## Extra
-
-- You can use any Javascript library you want, but we would rather if you use React
-- Write a readme file explaining4 what you did, what you used and how to run your project.
+## ReasonML special syntaxes used in the code
 
