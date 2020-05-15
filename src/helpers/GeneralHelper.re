@@ -12,14 +12,14 @@ let flattenOptionOfList = (o: option(list('a))) : list('a) => {
 };
 
 let flattenListOfOption = (l: list(option('a))) : list('a) => {
-  List.fold_left(
-    (agg: list('a), next: option('a)) => 
+  List.fold_right(
+    (next: option('a), agg: list('a)) => 
       switch (next) {
       | Some(x) => [x, ...agg]
       | None => agg
       },
-    [],
-    l
+    l,
+    []
   );
 };
 
