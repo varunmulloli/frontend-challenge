@@ -22,7 +22,19 @@ There are two files in the `src/` folder: `Server.re` and `Client.re`. `Server.r
 * `src/routes` has the route configuration files, that can be used by both server and client.
 
 ## Architecture
+### Types
+An error is represented as a `string`. An API operation either returns some data or throws an error, so it is modelled as a `Result` type. This datatype is provided by Belt, a standard library shipped with BuckleScript. If you expect an integer value from the operation, the datatype will be `Belt.Result.t(int, string)` where string is the error that could've occured.
+But the UI may depend on multiple API operations and should be able to display partial data and the errors. So the datatype used is a tuple of data and a list of strings for the errors happened. If the expected data is of an arbitrary type `'a`, then the datatype would be `('a, list(string))`. These are described in `src/core/Types.re`.
 
+### Routing and Persistence
+Each page is modelled as a variant in `src/core/Types.re`, and any URL that is hit will be mapped to one of these pages. This code can be found in `src/routes/Routes.re`.
+Each page has a component builder that gives the component to render for that corresponding page, as described in `src/routes/RouteComponent.re`. Each page also has a mapping of what data to fetch for that component, as described in `src/routes/RouteData.re`.
+When the request hits the server, the URL is mapped to the corresponding page. The data (if required) is fetched for this page and is supplied to the top-level component `App.re` (present in `src/components/App` directory). The App component persists this data, finds the corresponding component for the page and renders it with the necessary data passed to it. The server returns a fully rendered page for the request.
+This page also contains the fetched data in serialized form, and it is used by the JavaScript to rehydrate the application.
+When a URL change is triggered within the application, the root component of the client (`ClientApp` module present in `Client.re`) which listens to URL changes will re-render, effectively re-rendering `App.re` which loads the corresponding component for the new URL with the data it already has in the state. The newly rendered component on URL changes check whether it has valid data passed as props. If not, it finds it's corresponding page and fetches the required data and dispatches it to the App component. This will re-render it, effectively re-rendering the component with the data it requires.
+By this way, if the same page is opened multiple times (without refreshing), data is fetched only once from the external service. If the data is of dynamic nature, it can be fetched on every page load by removing the validity check in the component.
+
+## How to run the code
 
 The purpose of this challenge is to let the developer show familiarity and skills with frontend technologies by creating a simple app using what its judges best, regarding patterns, libraries, and architeture.
 
